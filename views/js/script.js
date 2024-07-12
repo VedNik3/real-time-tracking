@@ -1,5 +1,12 @@
 const socket = io();
 
+let userId = '';
+
+socket.on('user-id', (id) => {
+    userId = id;
+    console.log(`Received user ID: ${userId}`);
+});
+
 if(navigator.geolocation){
     navigator.geolocation.watchPosition((position)=>{
         const {latitude, longitude} = position.coords;
@@ -24,6 +31,18 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const markers = {};
 
+// const redMarker = L.AwesomeMarkers.icon({
+//     icon: 'coffee',
+//     markerColor: 'red'
+//   });
+// const usericon = new L.Icon({
+//     iconUrl: '/views/image1.jpg',
+//     iconSize: [25, 41],
+//     iconAnchor: [12, 41],
+//     popupAnchor: [1, -34],
+//     shadowSize: [41, 41]
+// })
+
 socket.on("receive-location", (data) => {
     const {id, latitude, longitude} = data;
     map.setView([latitude, longitude]);
@@ -34,6 +53,7 @@ socket.on("receive-location", (data) => {
         markers[id] = L.marker([latitude, longitude]).addTo(map);
     }
 });
+
 
 socket.on("user-disconnected", (id) =>{
     if(markers[id]){
